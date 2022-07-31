@@ -1,5 +1,5 @@
 # Spectra
-An open-source GUI for spectroscopic analysis written with Python 3
+An open-source GUI for spectroscopic analysis written with Python 3.
 
 # Requirements
 
