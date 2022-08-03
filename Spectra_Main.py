@@ -356,8 +356,9 @@ class MyTableWidget(QWidget):
         self.der        = 0
         self.delta      = 1.0
         self.axis       = -1
-        
-        self.rev = True
+        # Reverse
+        self.rev_y = True
+        self.rev_x = True
 
         def onclick(event):
             global peaks
@@ -367,7 +368,8 @@ class MyTableWidget(QWidget):
                 peaks = str('{:.2f}').format(event.xdata)
                 self.txt.append(peaks)
                 self.p.append(event.xdata)
-                self.canvas.axes.plot(self.p1,self.p2,'ro',ms=4)                
+                self.canvas.axes.plot(self.p1,self.p2,'ro',ms=4)
+                self.canvas.draw_idle()             
                 self.text_edit.setPlainText(peaks)
                 self.plaintext_edit.appendPlainText(peaks)
             if event.button == 3: #Delete marks for peaks with right click
@@ -382,6 +384,7 @@ class MyTableWidget(QWidget):
                     try:
                         self.Plot()
                         self.canvas.axes.plot(self.p1,self.p2,'ro',ms=4)
+                        self.canvas.draw_idle()
                     except:
                         print('right click error')
                 else:
@@ -403,14 +406,21 @@ class MyTableWidget(QWidget):
         except FileNotFoundError:
             pass
     def reverse_y(self):
-        # *(-1) to find the absorbance peaks in ir else uncomment invert_yaxis()
-        self.df['y'].update(self.df['y'].values*(-1))
-        self.Plot()
-        # self.canvas.axes.invert_yaxis()
-        self.rev = False
-        # self.y = -self.y
+        if self.rev_y == False:
+            self.canvas.axes.invert_yaxis()
+            self.rev_y = True
+        elif self.rev_y == True:
+            self.canvas.axes.invert_yaxis()
+            self.rev_y = False
+        self.canvas.draw_idle()
     def reverse_x(self):
-        self.canvas.axes.invert_xaxis()
+        if self.rev_x == False:
+            self.canvas.axes.invert_xaxis()
+            self.rev_x = True
+        elif self.rev_x == True:
+            self.canvas.axes.invert_xaxis()
+            self.rev_x = False
+        self.canvas.draw_idle()       
     def undo_plot(self):
         try:
             self.p1=[]
@@ -431,6 +441,7 @@ class MyTableWidget(QWidget):
             #Adding Labels & Cursor
             self.canvas.axes.set_xlabel(self.xlabel)
             self.canvas.axes.set_ylabel(self.ylabel)
+            self.canvas.draw_idle()
             self.add_cursor()
     def csv_to_dataframe(self):
         # Changing the Directory and making a title w/ the file
@@ -459,6 +470,7 @@ class MyTableWidget(QWidget):
             new_data = open(input_file,'r')
             new_df = pd.read_csv(new_data,sep='\t',dtype='float')
             new_df.plot(ax=self.canvas.axes,x= 'x',y = 'y',title=self.title,legend=False,grid=True, linewidth=0.5)
+            self.canvas.draw_idle()
         except OSError:
             pass
     def baseline_als_optimized(self):
@@ -497,9 +509,11 @@ class MyTableWidget(QWidget):
                 selection.annotation.set_bbox(None)
                 selection.annotation.arrow_patch.set(arrowstyle='-',linewidth=.4)
                 selection.annotation.set(text=int(xi),color=selection.artist.get_color(),size=8)
-            if self.rev == False:
-                print('true')
+            if self.rev_y == False:
                 plt.gca().invert_yaxis()
+            if self.rev_x == False:
+                plt.gca().invert_xaxis()
+            plt.draw()
             plt.show()
             
         except TypeError:
@@ -530,18 +544,22 @@ class MyTableWidget(QWidget):
         self.xlabel, self.ylabel = 'Raman Shift cm⁻¹', 'Intensity →'
         self.canvas.axes.set_xlabel(self.xlabel)
         self.canvas.axes.set_ylabel(self.ylabel)
+        self.canvas.draw_idle()
     def ir_r_label(self):
         self.xlabel, self.ylabel = 'Wavenumber cm⁻¹', 'Reflectance Coefficient'
         self.canvas.axes.set_xlabel(self.xlabel)
         self.canvas.axes.set_ylabel(self.ylabel)
+        self.canvas.draw_idle()
     def ir_a_label(self):
         self.xlabel, self.ylabel = 'Wavenumber cm⁻¹', 'Absorbance'
         self.canvas.axes.set_xlabel(self.xlabel)
         self.canvas.axes.set_ylabel(self.ylabel)
+        self.canvas.draw_idle()
     def uv_label(self):
         self.xlabel, self.ylabel = 'Wavelength (nm)', 'Absorbance'
         self.canvas.axes.set_xlabel(self.xlabel)
         self.canvas.axes.set_ylabel(self.ylabel)
+        self.canvas.draw_idle()
     def h_change(self):
         try:
             self.h = float(self.text_h.text())
