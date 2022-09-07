@@ -7,7 +7,7 @@ matplotlib == 3.3.2<br/>
 mplcursors == 0.4<br/>
 numpy == 1.19.2<br/>
 pandas == 1.1.3<br/>
-pyqt5-sip == 12.11.0<br/>
+pyqt5 == 5.9.2<br/>
 scipy == 1.5.2<br/>
 seaborn == 0.11.0
 
