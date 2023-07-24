@@ -30,7 +30,7 @@ Replace `<name>` with the desired name for your virtual environment.
 7. Run the `main.py` file to start using the application.
 
 # New Features in v2.1.1
-The latest version (v2.1.0) introduces the following new features:
+The latest version (v2.1.1) introduces the following new features:
 
 - Upgraded support from Python 3.8 to Python 3.11 for improved performance.
 - Updated the architecture of the entire package and included type hints for better documentation.
