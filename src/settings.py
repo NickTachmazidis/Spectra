@@ -2,15 +2,13 @@
 import sys
 # GUI
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtCore import pyqtSignal
 # Configurations
 from omegaconf import OmegaConf
 # src
-from .functions import Funcs
+from .gui.functions import Funcs
 
 class Settings(QtWidgets.QMainWindow, Funcs):
-    closed = pyqtSignal(object) # signal to send the changed settings
-    
+
     def __init__(self, settings):
         super().__init__()
         uic.loadUi('./src/UI/settings.ui', self)

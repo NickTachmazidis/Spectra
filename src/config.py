@@ -5,6 +5,7 @@ from typing import Optional, Iterable
 class General:
     path: str
     sep: str
+    engine: str
     lw: float
 
 @dataclass

@@ -1,6 +1,7 @@
 general:
   path: C:\
   sep: \t
+  engine: c
   lw: 0.8
 smooth:
   window_length: 51
