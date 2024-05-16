@@ -585,12 +585,12 @@ class Funcs:
 
             # Update Spectrum Peaks
             if sp_peaks:
-                # setting row count
+                # Set row count
                 m = max([i.size for i in sp_peaks])
                 self.table_peaks.setRowCount(m)
-                # setting column count
+                # Set column count
                 self.table_peaks.setColumnCount(len(sp_peaks) + 1)
-                # Adding the header labels
+                # Add the header labels
                 self.table_peaks.setHorizontalHeaderLabels(["My_peaks"] + sp_labels)
 
                 for col, xdata in enumerate(sp_peaks, start=1):
