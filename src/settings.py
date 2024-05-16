@@ -12,7 +12,7 @@ class Settings(QtWidgets.QMainWindow, Funcs):
     def __init__(self, settings):
         super().__init__()
         uic.loadUi('./src/UI/settings.ui', self)
-        self.curves: dict()
+        self.curves: dict
         self.actions: bool = False
 
         # Settings
@@ -195,7 +195,7 @@ class Settings(QtWidgets.QMainWindow, Funcs):
 
     def ok(self) -> None:
         if self.actions:
-            """ save new parameters to the "config.yaml" """
+            """Save new parameters to the "config.yaml" file."""
             conf = OmegaConf.create(self.settings)
             OmegaConf.save(config=conf, f='./src/conf/config.yaml')
         self.close()
