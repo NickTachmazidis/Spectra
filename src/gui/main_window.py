@@ -164,7 +164,10 @@ class Main(QtWidgets.QMainWindow, Funcs):
             if event.button == 1 and event.dblclick: 
                 new_row = pd.DataFrame({'p_x': event.xdata, 'p_y': event.ydata},
                                         index=[str(next(self.count))])
-                self.df_p = pd.concat([self.df_p,new_row])                
+                if self.df_p.empty:
+                    self.df_p = new_row
+                else:
+                    self.df_p = pd.concat([self.df_p,new_row])                
                 self.df_p_plot(self.canvas.axes)
                 # Add to Undo stack
                 self.undo_stack.append(('New_my_peak', new_row))
