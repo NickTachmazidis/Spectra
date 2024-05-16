@@ -6,7 +6,6 @@ from PyQt5 import QtWidgets
 import hydra
 from hydra.core.config_store import ConfigStore
 # src
-# from src.gui import Main
 from src.config import Config
 from src.gui.main_window import Main
 
