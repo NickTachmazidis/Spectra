@@ -28,8 +28,8 @@ shortcuts:
   redo: Ctrl+Y
   edit: Ctrl+E
   add_plot: Ctrl+1
-  reverse_x: Ctrl+Delete
-  reverse_y: Ctrl+Backspace
+  reverse_x: Ctrl+[
+  reverse_y: Ctrl+]
   save_as: Ctrl+Shift+S
   settings: Escape
   normalize: Ctrl+N
