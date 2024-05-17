@@ -1,6 +1,6 @@
 # Core
 from itertools import count
-from typing import Optional, List, Iterator
+from typing import Any, Optional, List, Iterator
 # Data/visualisation
 import numpy as np
 from matplotlib.lines import Line2D
@@ -14,21 +14,21 @@ class Spectrum():
         self.id: int = next(Spectrum.newid)
         # Data
         self.curve: Line2D = curve
-        self.x_data: List = self.curve.get_xdata()
-        self.y_data: List = self.curve.get_ydata()
+        self.x_data: np.ndarray = self.curve.get_xdata()
+        self.y_data: np.ndarray = self.curve.get_ydata()
         # State
         self.loaded: bool = False
         self.tristate: int = 1 # -1 tristate, 0 unchecked, 1 checked
         # Data proccessing
-        self.y_orig: np.array = np.copy(self.y())
-        self.y_smooth: Optional[np.array]
-        self.y_baseline: Optional[np.array]
-        self.y_normalized: Optional[np.array]
-        self.y_normalized_z: Optional[np.array]
+        self.y_orig: np.ndarray = np.copy(self.y_data)
+        self.y_smooth: Optional[np.ndarray] = None 
+        self.y_baseline: Optional[np.ndarray] = None
+        self.y_normalized: Optional[np.ndarray] = None
+        self.y_normalized_z: Optional[np.ndarray] = None
         # Peaks
         self.peaks: bool = False
-        self.peaks_object: Optional[np.array]
-        self.peaks_color: Optional[str]
+        self.peaks_object: Optional[np.ndarray] = None
+        self.peaks_color: Optional[str] = None
         # Styles
         self.linewidth: float = self.curve.get_lw()
         self.linestyle: str = self.curve.get_ls()
@@ -89,6 +89,7 @@ class Spectrum():
     def mrkr_edge(self) -> str:
         return self.marker_edge_color
 
-    def change_y(self, y):
+    def change_y(self, y: np.ndarray) -> None:
+        """Changes the current y values."""
         self.curve.set_ydata(y)
         self.y_data = y

@@ -141,9 +141,12 @@ class Funcs:
 
             input_file = self.get_file()
             df, label = self.csv_to_dataframe(
-                input_file=input_file, sep=self.sep, engine=self.engine
+                input_file=input_file,
+                sep=self.sep,
+                engine=self.engine
             )
             self.title = label
+
             # keep the old x and y limits
             old_x_lim, old_y_lim = self.canvas_get_zoom()
 
@@ -362,7 +365,7 @@ class Funcs:
                 self.canvas.axes.collections[-1].remove()
 
             elif actions[0] == "Delete_my_peak":
-                self.df_p = pd.concat(self.df_p, actions[1]).reset_index(drop=True)
+                self.df_p = pd.concat([self.df_p, actions[1]]).reset_index(drop=True)
                 self.df_p_plot(ax=self.canvas.axes)
 
             elif actions[0] == "Clear Table":
