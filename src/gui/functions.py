@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import QFileDialog
 # src
 from src.exception import CustomException
 from src.gui.canvas import Canvas
-from src.utils import add_spectrum, check_path
+from src.utils import add_spectrum, check_path, get_handles
 
 
 class Funcs:
@@ -254,8 +254,7 @@ class Funcs:
                     ax.plot(i.x(), i.y(), lw=self.settings.general.lw, label=i.label())
 
             if self.legend:
-                handles, _ = ax.get_legend_handles_labels()
-                handles = [i for i in handles if not (i.get_label() == "cursor" or i.get_label().startswith("peak_"))]
+                handles: list[Line2D] = get_handles(ax)
                 ax.legend(handles=handles)
 
             if self.x_rev:
@@ -368,7 +367,7 @@ class Funcs:
                 self.canvas.axes.collections[-1].remove()
 
             elif actions[0] == "Delete_my_peak":
-                self.df_p = self.df_p.append(actions[1]).reset_index(drop=True)
+                self.df_p = pd.concat(self.df_p, actions[1]).reset_index(drop=True)
                 self.df_p_plot(ax=self.canvas.axes)
 
             elif actions[0] == "Clear Table":
@@ -481,12 +480,7 @@ class Funcs:
     def add_legend(self) -> None:
         if self.legend_checkBox.isChecked():
             self.legend = True
-            handles, _ = self.canvas.axes.get_legend_handles_labels()
-            handles = [
-                i
-                for i in handles
-                if not (i.get_label() == "cursor" or i.get_label().startswith("peak_"))
-            ]
+            handles: list[Line2D] = get_handles(self.canvas.axes)
             self.canvas.axes.legend(handles=handles)
         else:
             self.legend = False

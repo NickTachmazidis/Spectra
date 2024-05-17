@@ -19,6 +19,7 @@ from src.gui.functions import Funcs
 # src
 from src.settings import Settings
 from src.spectra import Spectrum
+from src.utils import get_handles
 
 
 class Main(QtWidgets.QMainWindow, Funcs):
@@ -183,7 +184,10 @@ class Main(QtWidgets.QMainWindow, Funcs):
                 self.df_p_plot(self.canvas.axes)
                 
                 self.undo_stack.append(("New_my_peak", new_row))
-                
+
+                if self.legend:
+                    self.add_legend()
+
                 self.canvas_update()
 
         self.canvas.mpl_connect("button_press_event", add_peak)
@@ -200,6 +204,10 @@ class Main(QtWidgets.QMainWindow, Funcs):
                     self.update_peaks_table()
                     
                     self.canvas.axes.collections[-1].remove()
+                
+                if self.legend:
+                    self.add_legend()
+
                 self.canvas_update()
 
         self.canvas.mpl_connect("key_press_event", delete_peaks)
