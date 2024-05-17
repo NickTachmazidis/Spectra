@@ -1,6 +1,6 @@
 general:
   path: C:\
-  sep: \t
+  sep: ','
   engine: c
   lw: 0.8
 smooth:
