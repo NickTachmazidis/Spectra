@@ -88,3 +88,7 @@ class Spectrum():
 
     def mrkr_edge(self) -> str:
         return self.marker_edge_color
+
+    def change_y(self, y):
+        self.curve.set_ydata(y)
+        self.y_data = y
