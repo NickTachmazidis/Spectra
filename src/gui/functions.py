@@ -253,7 +253,7 @@ class Funcs:
             fig, ax = plt.subplots(nrows=1, ncols=1)
             for i in self.curves.values():
                 if i.tristate == 1:
-                    ax.plot(i.x(), i.y(), lw=self.settings.general.lw, label=i.label())
+                    ax.plot(i.x_data, i.y_data, lw=self.settings.general.lw, label=i.label)
 
             if self.legend:
                 handles: list[Line2D] = get_handles(ax)
@@ -449,7 +449,7 @@ class Funcs:
     def chkbox_clicked(self, row, col) -> None:
         if self.table.item(row, col).checkState() == QtCore.Qt.Unchecked:
             for i in self.curves.values():
-                if i.label() == self.table.item(row, col).text():
+                if i.label == self.table.item(row, col).text():
                     i.invisible()
                 if i.peaks:
                     if i.peaks_object.get_label() == self.table.item(row, col).text():
@@ -457,7 +457,7 @@ class Funcs:
 
         if self.table.item(row, col).checkState() == QtCore.Qt.Checked:
             for i in self.curves.values():
-                if i.label() == self.table.item(row, col).text():
+                if i.label == self.table.item(row, col).text():
                     i.visible()
                 if i.peaks:
                     if i.peaks_object.get_label() == self.table.item(row, col).text():
@@ -465,7 +465,7 @@ class Funcs:
 
         if self.table.item(row, col).checkState() == 1:
             for i in self.curves.values():
-                if i.label() == self.table.item(row, col).text():
+                if i.label == self.table.item(row, col).text():
                     i.disabled()
 
         self.canvas_update()
@@ -490,10 +490,10 @@ class Funcs:
             if i.tristate == 1:
                 if axis == "y":
                     i.y_data += value_y
-                    i.line().set_ydata(i.y_data)
+                    i.curve.set_ydata(i.y_data)
                 elif axis == "x":
                     i.x_data += value_x
-                    i.line().set_xdata(i.x_data)
+                    i.curve.set_xdata(i.x_data)
         self.canvas_update()
 
     ## Tables ##
@@ -535,8 +535,8 @@ class Funcs:
 
             for i, j in enumerate(self.curves.values()):
                 # Update Spectrum column
-                if not j.label().startswith("peak_"):
-                    chkBoxItem = QtWidgets.QTableWidgetItem(j.label())
+                if not j.label.startswith("peak_"):
+                    chkBoxItem = QtWidgets.QTableWidgetItem(j.label)
                     chkBoxItem.setFlags(
                         QtCore.Qt.ItemIsUserCheckable
                         | QtCore.Qt.ItemIsUserTristate
@@ -546,7 +546,7 @@ class Funcs:
                     self.table.setItem(i, 0, chkBoxItem)
                     # Update Peaks column
                     if j.peaks:
-                        chkBoxItem = QtWidgets.QTableWidgetItem(f"peak_{j.label()}")
+                        chkBoxItem = QtWidgets.QTableWidgetItem(f"peak_{j.label}")
                         chkBoxItem.setFlags(
                             QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled
                         )
@@ -569,7 +569,7 @@ class Funcs:
             for i in self.curves.values():
                 if i.peaks:
                     sp_peaks.append(i.peaks_object.get_xdata())
-                    sp_labels.append(i.label())
+                    sp_labels.append(i.label)
 
             # Update Spectrum Peaks
             if sp_peaks:
@@ -696,8 +696,8 @@ class Funcs:
             dfs = []
             for i in self.curves.values():
                 if i.tristate == 1:
-                    title = i.label()
-                    df = pd.DataFrame({"x": i.x(), "y": i.y()})
+                    title = i.label
+                    df = pd.DataFrame({"x": i.x_data, "y": i.y_data})
                     if i.peaks:
                         df["peaks_x"] = pd.Series(i.peaks_object.get_xdata())
                         df["peaks_y"] = pd.Series(i.peaks_object.get_ydata())

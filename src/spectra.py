@@ -16,6 +16,7 @@ class Spectrum():
         self.curve: Line2D = curve
         self.x_data: np.ndarray = self.curve.get_xdata()
         self.y_data: np.ndarray = self.curve.get_ydata()
+        self.label: str = self.curve.get_label() 
         # State
         self.loaded: bool = False
         self.tristate: int = 1 # -1 tristate, 0 unchecked, 1 checked
@@ -40,17 +41,17 @@ class Spectrum():
         self.marker_edge_width: float = self.curve.get_markeredgewidth()
         self.marker_face_color: str = self.curve.get_markerfacecolor()
             
-    def label(self) -> str:
-        return self.curve.get_label()
+    # def label(self) -> str:
+    #     return self.curve.get_label()
 
-    def x(self) -> List:
-        return self.curve.get_xdata()
+    # def x(self) -> List:
+    #     return self.curve.get_xdata()
 
-    def y(self) -> List:
-        return self.curve.get_ydata()
+    # def y(self) -> List:
+    #     return self.curve.get_ydata()
 
-    def line(self) -> Line2D:
-        return self.curve
+    # def line(self) -> Line2D:
+    #     return self.curve
 
     def visible(self) -> None:
         self.curve.set_visible(True)
