@@ -140,11 +140,10 @@ class Funcs:
                 self.curves = dict()
 
             input_file = self.get_file()
-            self.title = input_file.split("/")[-1].replace(".csv", "")
             df, label = self.csv_to_dataframe(
                 input_file=input_file, sep=self.sep, engine=self.engine
             )
-
+            self.title = label
             # keep the old x and y limits
             old_x_lim, old_y_lim = self.canvas_get_zoom()
 
