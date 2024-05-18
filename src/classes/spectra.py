@@ -57,3 +57,8 @@ class Spectrum():
 
     def __str__(self):
         return f"{self.label}"
+    
+class Peaks:
+    """Peaks class for peaks contained in Spectrum objects."""
+    def __init__(self, obj) -> None:
+        pass
