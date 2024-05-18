@@ -13,6 +13,7 @@ from omegaconf import DictConfig
 from PyQt5 import QtCore, QtWidgets, uic
 
 from src.functions.data_process import baseline, norm_min_max, norm_z, peaks_find, smoothing
+from src.functions.utils import save_as
 from src.gui.canvas import Canvas
 from src.gui.functions import Funcs
 
@@ -116,7 +117,7 @@ class Main(QtWidgets.QMainWindow, Funcs):
         self.button_normalize_z.setShortcut(self.settings.shortcuts.normalize_z)
 
         # Save As
-        self.button_save_as.clicked.connect(lambda: self.save_as())
+        self.button_save_as.clicked.connect(lambda: save_as(self.curves, self.sep))
         self.button_save_as.setShortcut(self.settings.shortcuts.save_as)
 
         # TODO Change this button and function

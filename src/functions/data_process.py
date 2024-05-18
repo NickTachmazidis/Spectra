@@ -1,12 +1,26 @@
 import numpy as np
+import pandas as pd
 from matplotlib.lines import Line2D
 from omegaconf import DictConfig
 from scipy import sparse
 from scipy.signal import find_peaks, savgol_filter
 
+from src.exceptions.exception import CustomException
 from src.gui.canvas import Canvas
 from src.classes.spectra import Spectrum
 
+def csv_to_dataframe(
+    input_file: str,
+    sep: str,
+    engine: str
+    ) -> tuple[pd.DataFrame, str]:
+    """Converts the CSV file to a pd.DataFrame object."""
+    try:
+        label = input_file.split("/")[-1].replace(".csv", "")
+        df = pd.read_csv(input_file, sep=sep, engine=engine, dtype="float")
+        return df, label
+    except Exception as e:
+        raise CustomException(e)
 
 def smoothing(*args) -> tuple[str, np.ndarray, np.ndarray, Spectrum]:
     """
