@@ -3,8 +3,14 @@ import os
 from matplotlib.axes import Axes
 from matplotlib.lines import Line2D
 
+from src.classes.labels import Label
 from src.exception import CustomException
 from src.spectra import Spectrum
+
+def label_options(label: str) -> tuple[str, str]:
+    """Retrieves the x, y label values."""
+    x, y = Label.return_value(label)
+    return x, y
 
 def get_handles(ax: Axes) -> list[Line2D]:
     handles, _ = ax.get_legend_handles_labels()

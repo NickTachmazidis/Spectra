@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import QFileDialog
 # src
 from src.exception import CustomException
 from src.gui.canvas import Canvas
-from src.utils import add_spectrum, check_path, get_handles
+from src.utils import add_spectrum, check_path, get_handles, label_options
 
 
 class Funcs:
@@ -639,35 +639,14 @@ class Funcs:
             prev = self.labels[-1]
             new = self.dropbox_lbl.currentText()
 
-            self.xlabel, self.ylabel = self.label_options(new)
+            self.xlabel, self.ylabel = label_options(new)
             self.undo_stack.append(
-                ("Label", self.label_options(prev), (self.xlabel, self.ylabel))
+                ("Label", label_options(prev), (self.xlabel, self.ylabel))
             )
             self.labels.append(new)
             self.canvas_update()
         except Exception as e:
             raise CustomException(e)
-
-    def label_options(self, label: str) -> tuple[str, str]:
-        if label == "None":
-            x, y = "", ""
-        elif label == "Raman":
-            x, y = "Raman Shift (cm⁻¹)", "Intensity →"
-        elif label == "IR (Ref)":
-            x, y = "Wavenumber (cm⁻¹)", "Reflectance Coefficient"
-        elif label == "IR (Abs)":
-            x, y = "Wavenumber (cm⁻¹)", "Absorbance"
-        elif label == "IR (Trans)":
-            x, y = "Wavenumber (cm⁻¹)", "Transmittance (%)"
-        elif label == "UV-Vis":
-            x, y = "Wavelength (nm)", "Absorbance"
-        elif label == "Reflectance":
-            x, y = "Wavelength (nm)", "Reflectance (%)"
-        elif label == "XRF":
-            x, y = "Energy (keV)", "Counts"
-        elif label == "XRD":
-            x, y = "2θ (degrees)", "Intensity"
-        return x, y
 
     ## Settings Window ##
     def open_settings(self) -> None:
