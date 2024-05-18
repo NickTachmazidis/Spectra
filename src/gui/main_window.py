@@ -12,12 +12,12 @@ from omegaconf import DictConfig
 # GUI
 from PyQt5 import QtCore, QtWidgets, uic
 
-from src.data_process import baseline, norm_min_max, norm_z, peaks_find, smoothing
+from src.functions.data_process import baseline, norm_min_max, norm_z, peaks_find, smoothing
 from src.gui.canvas import Canvas
 from src.gui.functions import Funcs
 
 # src
-from src.spectra import Spectrum
+from src.classes.spectra import Spectrum
 
 class Main(QtWidgets.QMainWindow, Funcs):
     """Main Window class of the GUI app."""

@@ -16,9 +16,9 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 
 # src
-from src.exception import CustomException
+from src.exceptions.exception import CustomException
 from src.gui.canvas import Canvas
-from src.utils import add_spectrum, check_path, get_handles, label_options
+from src.functions.utils import add_spectrum, check_path, get_handles, label_options
 
 
 class Funcs:
