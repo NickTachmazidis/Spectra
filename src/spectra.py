@@ -1,6 +1,6 @@
 # Core
 from itertools import count
-from typing import Any, Optional, List, Iterator
+from typing import Optional, Iterator
 # Data/visualisation
 import numpy as np
 from matplotlib.lines import Line2D
@@ -29,29 +29,6 @@ class Spectrum():
         # Peaks
         self.peaks: bool = False
         self.peaks_object: Optional[np.ndarray] = None
-        self.peaks_color: Optional[str] = None
-        # Styles
-        self.linewidth: float = self.curve.get_lw()
-        self.linestyle: str = self.curve.get_ls()
-        self.drawstyle: str = self.curve.get_drawstyle() 
-        self.color: str = self.curve.get_color()
-        self.marker: str = self.curve.get_marker()
-        self.marker_size: float = self.curve.get_markersize()
-        self.marker_edge_color: str = self.curve.get_markeredgecolor()
-        self.marker_edge_width: float = self.curve.get_markeredgewidth()
-        self.marker_face_color: str = self.curve.get_markerfacecolor()
-            
-    # def label(self) -> str:
-    #     return self.curve.get_label()
-
-    # def x(self) -> List:
-    #     return self.curve.get_xdata()
-
-    # def y(self) -> List:
-    #     return self.curve.get_ydata()
-
-    # def line(self) -> Line2D:
-    #     return self.curve
 
     def visible(self) -> None:
         self.curve.set_visible(True)
@@ -75,22 +52,10 @@ class Spectrum():
         self.peaks = True
         self.peaks_object = peaks_obj
 
-    def lw(self) -> float:
-        return self.linewidth
-
-    def color(self) -> str:
-        return self.color
-
-    def mrkr_size(self) -> float:
-        return self.marker_size
-
-    def mrkr_face(self) -> str:
-        return self.marker_face_color
-
-    def mrkr_edge(self) -> str:
-        return self.marker_edge_color
-
     def change_y(self, y: np.ndarray) -> None:
         """Changes the current y values."""
         self.curve.set_ydata(y)
         self.y_data = y
+
+    def __str__(self):
+        return f"{self.label}"
