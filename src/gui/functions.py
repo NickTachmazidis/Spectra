@@ -27,7 +27,7 @@ from src.functions.data_process import csv_to_dataframe
 from src.functions.utils import add_spectrum, get_file, get_handles, label_options
 
 
-class Funcs:
+class QtFunctions:
     """Function class for the GUI app."""
 
     def plot(self, df: pd.DataFrame, label: str, ax: Axes, state: str = "Add") -> Axes:
