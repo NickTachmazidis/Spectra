@@ -17,12 +17,11 @@ def get_handles(ax: Axes) -> list[Line2D]:
     handles = [i for i in handles if not (i.get_label() == "cursor" or i.get_label().startswith("peak_"))]
     return handles
 
-def add_spectrum(curve: Line2D) -> tuple[Spectrum, int]:
+def add_spectrum(curve: Line2D) -> Spectrum:
     """Creates a Spectrum object."""
     try:
         sp = Spectrum(curve)
-        sp_id = sp.id
-        return sp, sp_id
+        return sp
     except Exception as e:
         raise CustomException(e)
 

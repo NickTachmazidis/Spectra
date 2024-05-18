@@ -1,31 +1,29 @@
 # Core
-from itertools import count
 from typing import Optional, Iterator
 # Data/visualisation
 import numpy as np
 from matplotlib.lines import Line2D
 
 class Spectrum():
-    # Initialize count
-    newid: Iterator = count()
-
-    def __init__(self, curve):
-        # ID
-        self.id: int = next(Spectrum.newid)
+    """Spectum class for plotted data."""
+    def __init__(self, curve: Line2D) -> None:
         # Data
         self.curve: Line2D = curve
         self.x_data: np.ndarray = self.curve.get_xdata()
         self.y_data: np.ndarray = self.curve.get_ydata()
-        self.label: str = self.curve.get_label() 
+        self.label: str = self.curve.get_label()
+
         # State
         self.loaded: bool = False
         self.tristate: int = 1 # -1 tristate, 0 unchecked, 1 checked
+        
         # Data proccessing
         self.y_orig: np.ndarray = np.copy(self.y_data)
         self.y_smooth: Optional[np.ndarray] = None 
         self.y_baseline: Optional[np.ndarray] = None
         self.y_normalized: Optional[np.ndarray] = None
         self.y_normalized_z: Optional[np.ndarray] = None
+        
         # Peaks
         self.peaks: bool = False
         self.peaks_object: Optional[np.ndarray] = None

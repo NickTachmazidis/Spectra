@@ -114,8 +114,8 @@ class Funcs:
             )
 
             # Convert DataFrame to Spectrum object
-            sp, sp_id = add_spectrum(ax.lines[-1])
-            self.curves.update({sp_id: sp})
+            sp = add_spectrum(ax.lines[-1])
+            self.curves.update({sp.label: sp})
 
             if self.legend:
                 self.add_legend()
