@@ -648,27 +648,6 @@ class Funcs:
         except Exception as e:
             raise CustomException(e)
 
-    ## Settings Window ##
-    def open_settings(self) -> None:
-        try:
-            self.settings_ui.lineEdit_title.setText(self.title)
-
-            x_bounds = self.canvas.axes.get_xlim()
-            self.settings_ui.lineEdit_xaxis_left.setText(str(x_bounds[0]))
-            self.settings_ui.lineEdit_xaxis_right.setText(str(x_bounds[1]))
-            self.settings_ui.lineEdit_xaxis_label.setText(self.xlabel)
-
-            y_bounds = self.canvas.axes.get_ylim()
-            self.settings_ui.lineEdit_yaxis_bottom.setText(str(y_bounds[0]))
-            self.settings_ui.lineEdit_yaxis_top.setText(str(y_bounds[1]))
-            self.settings_ui.lineEdit_yaxis_label.setText(self.ylabel)
-
-            self.settings_ui.update_dropdown(self.curves)
-            self.settings_ui.show()
-
-        except Exception as e:
-            raise CustomException(e)
-
     ## Save spectrum ##
     def save_as(self) -> None:
         try:

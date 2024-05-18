@@ -17,10 +17,7 @@ from src.gui.canvas import Canvas
 from src.gui.functions import Funcs
 
 # src
-from src.settings import Settings
 from src.spectra import Spectrum
-from src.utils import get_handles
-
 
 class Main(QtWidgets.QMainWindow, Funcs):
     """Main Window class of the GUI app."""
@@ -122,9 +119,9 @@ class Main(QtWidgets.QMainWindow, Funcs):
         self.button_save_as.clicked.connect(lambda: self.save_as())
         self.button_save_as.setShortcut(self.settings.shortcuts.save_as)
 
-        # Settings
-        self.button_settings.clicked.connect(lambda: self.open_settings())
-        self.button_settings.setShortcut(self.settings.shortcuts.settings)
+        # TODO Change this button and function
+        # self.button_settings.clicked.connect(lambda: self.open_settings())
+        # self.button_settings.setShortcut(self.settings.shortcuts.settings)
 
         # Edit
         self.button_edit.clicked.connect(lambda: self.edit_form())
@@ -164,9 +161,6 @@ class Main(QtWidgets.QMainWindow, Funcs):
         self.canvas.setFocus()
         self.show()  # uncomment for small window and comment showMaximized
         # self.showMaximized()
-
-        # Initialize Settings
-        self.settings_ui = Settings(self.settings)
 
         # Manual Peaks
         def add_peak(event: MouseEvent) -> None:
