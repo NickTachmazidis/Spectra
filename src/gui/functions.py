@@ -13,12 +13,10 @@ from matplotlib.widgets import Cursor
 
 # GUI
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import QFileDialog
 
 # src
 from src.exceptions.exception import CustomException
 from src.functions.canvas import (
-    add_cursor,
     canvas_clear,
     canvas_get_zoom,
     canvas_remove,
@@ -26,7 +24,7 @@ from src.functions.canvas import (
     canvas_update,
 )
 from src.functions.data_process import csv_to_dataframe
-from src.functions.utils import add_spectrum, check_path, get_file, get_handles, label_options
+from src.functions.utils import add_spectrum, get_file, get_handles, label_options
 
 
 class Funcs:
@@ -606,32 +604,4 @@ class Funcs:
             )
         except Exception as e:
             raise CustomException(e)
-
-    ## Save spectrum ##
-    # def save_as(self) -> None:
-    #     try:
-    #         dfs = []
-    #         for i in self.curves.values():
-    #             if i.tristate == 1:
-    #                 title = i.label
-    #                 df = pd.DataFrame({"x": i.x_data, "y": i.y_data})
-    #                 if i.peaks:
-    #                     df["peaks_x"] = pd.Series(i.peaks_object.get_xdata())
-    #                     df["peaks_y"] = pd.Series(i.peaks_object.get_ydata())
-    #             dfs.append((title, df))
-
-    #         file = str(
-    #             QtWidgets.QFileDialog.getExistingDirectory(self, "Select Directory")
-    #         )
-
-    #         sep = self.sep
-
-    #         if sep is None or len(sep) > 1:
-    #             sep = ","
-
-    #         for i in dfs:
-    #             path = check_path(file, i[0])
-    #             i[1].to_csv(path_or_buf=path, sep=sep, index=False)
-
-    #     except Exception as e:
-    #         raise CustomException(e)
+        
