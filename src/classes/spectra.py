@@ -26,10 +26,13 @@ class Spectrum():
         # Data proccessing
         self.y_orig: np.ndarray = np.copy(self.y_data)
         
-        # Peaks
-        self.peaks: bool = False
-        self.peaks_object: Optional[np.ndarray] = None
+        # Color
+        self._color: str = self.curve.get_color()
 
+        # Peaks
+        self.has_peaks: bool = False
+        self.peaks_object: Optional[np.ndarray] = None
+        
     @property
     def y(self):
         """The y data of the Spectrum."""
@@ -43,7 +46,7 @@ class Spectrum():
 
     def visible(self) -> None:
         self.curve.set_visible(True)
-        self.curve.set_color(self.color)
+        self.curve.set_color(self._color)
         self.tristate = 1
 
     def invisible(self) -> None:
@@ -56,11 +59,11 @@ class Spectrum():
         self.tristate = -1
 
     def delete_peaks(self) -> None:
-        self.peaks        = False
+        self.has_peaks = False
         self.peaks_object = None
 
     def add_peaks(self, peaks_obj: np.array) -> None:
-        self.peaks = True
+        self.has_peaks = True
         self.peaks_object = peaks_obj
 
     def __str__(self):

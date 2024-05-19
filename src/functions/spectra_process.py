@@ -4,6 +4,7 @@ from omegaconf import DictConfig
 from scipy import sparse
 from scipy.signal import find_peaks, savgol_filter
 
+from src.functions.canvas import canvas_remove
 from src.gui.canvas import Canvas
 from src.classes.spectra import Spectrum
 
@@ -39,11 +40,10 @@ def peaks_find(*args) -> tuple[str, Line2D, Spectrum]:
     params: DictConfig = args[1][0]
     canvas: Canvas = args[1][1]
 
-    if sp.peaks:
+    if sp.has_peaks:
         # find the sp.peak_object in the canvas and remove it
-        idx = canvas.axes.lines.index(sp.peaks_object)  # O(n)
-        canvas.axes.lines[idx].remove()
-        sp.peaks_object = False
+        canvas_remove(canvas, sp.peaks_object)
+        sp.peaks_object = None
 
     peaks, _ = find_peaks(
         x=sp.y_data,
@@ -55,7 +55,7 @@ def peaks_find(*args) -> tuple[str, Line2D, Spectrum]:
     )
 
     if peaks.size > 0:
-        sp.peaks = True
+        sp.has_peaks = True
 
         pks = canvas.axes.plot(
             sp.x_data[peaks], 
@@ -66,7 +66,7 @@ def peaks_find(*args) -> tuple[str, Line2D, Spectrum]:
         )[-1]
 
         sp.peaks_object = pks
-
+        
         return ("Peaks", pks, sp)
 
 

@@ -398,7 +398,7 @@ class QtFunctions:
             for i in self.curves.values():
                 if i.label == self.table.item(row, col).text():
                     i.invisible()
-                if i.peaks:
+                if i.has_peaks:
                     if i.peaks_object.get_label() == self.table.item(row, col).text():
                         i.peaks_object.set_visible(False)
 
@@ -406,7 +406,7 @@ class QtFunctions:
             for i in self.curves.values():
                 if i.label == self.table.item(row, col).text():
                     i.visible()
-                if i.peaks:
+                if i.has_peaks:
                     if i.peaks_object.get_label() == self.table.item(row, col).text():
                         i.peaks_object.set_visible(True)
 
@@ -466,7 +466,7 @@ class QtFunctions:
 
             prev_obj = dict()
             for i in self.curves.values():
-                if i.peaks:
+                if i.has_peaks:
                     prev_obj.update({i: i.peaks_object})
                     # delete the peaks_object from the canvas
                     idx = self.canvas.axes.lines.index(i.peaks_object)
@@ -500,7 +500,7 @@ class QtFunctions:
                     chkBoxItem.setCheckState(QtCore.Qt.Checked)
                     self.table.setItem(i, 0, chkBoxItem)
                     # Update Peaks column
-                    if j.peaks:
+                    if j.has_peaks:
                         chkBoxItem = QtWidgets.QTableWidgetItem(f"peak_{j.label}")
                         chkBoxItem.setFlags(
                             QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled
@@ -522,7 +522,7 @@ class QtFunctions:
             sp_peaks = []  # list for spectrum peaks x data
             sp_labels = []  # list for spectrum label
             for i in self.curves.values():
-                if i.peaks:
+                if i.has_peaks:
                     sp_peaks.append(i.peaks_object.get_xdata())
                     sp_labels.append(i.label)
 
