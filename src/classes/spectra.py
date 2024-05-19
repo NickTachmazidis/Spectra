@@ -70,3 +70,20 @@ class Peaks:
     """Peaks class for peaks contained in Spectrum objects."""
     def __init__(self, obj) -> None:
         pass
+
+class SpectrumList:
+    """Spectrum list class to manage spectra."""
+    def __init__(self) -> None:
+        self._list = {}
+
+    def add(self, spectrum):
+        if not self._list.get(spectrum.id, False):            
+            self._list[spectrum.id] = {
+                "spectrum": spectrum,
+                "name": spectrum.label,
+                "visible": True,
+                "peaks": spectrum.peaks
+                }
+    @property
+    def list(self):
+        return self._list
