@@ -1,12 +1,18 @@
 # Core
-from typing import Optional, Iterator
+from itertools import count
+from typing import Iterator, Optional
 # Data/visualisation
 import numpy as np
 from matplotlib.lines import Line2D
 
 class Spectrum():
     """Spectum class for plotted data."""
+
+    new_id: Iterator = count()
+
     def __init__(self, curve: Line2D) -> None:
+        # ID
+        self.id = next(Spectrum.new_id)
         # Data
         self.curve: Line2D = curve
         self.x_data: np.ndarray = self.curve.get_xdata()
