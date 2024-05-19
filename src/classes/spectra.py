@@ -19,14 +19,21 @@ class Spectrum():
         
         # Data proccessing
         self.y_orig: np.ndarray = np.copy(self.y_data)
-        self.y_smooth: Optional[np.ndarray] = None 
-        self.y_baseline: Optional[np.ndarray] = None
-        self.y_normalized: Optional[np.ndarray] = None
-        self.y_normalized_z: Optional[np.ndarray] = None
         
         # Peaks
         self.peaks: bool = False
         self.peaks_object: Optional[np.ndarray] = None
+
+    @property
+    def y(self):
+        """The y data of the Spectrum."""
+        return self.y_data
+
+    @y.setter
+    def y(self, value):
+        """Changes the current y values."""
+        self.curve.set_ydata(value)
+        self.y_data = value
 
     def visible(self) -> None:
         self.curve.set_visible(True)
@@ -49,11 +56,6 @@ class Spectrum():
     def add_peaks(self, peaks_obj: np.array) -> None:
         self.peaks = True
         self.peaks_object = peaks_obj
-
-    def change_y(self, y: np.ndarray) -> None:
-        """Changes the current y values."""
-        self.curve.set_ydata(y)
-        self.y_data = y
 
     def __str__(self):
         return f"{self.label}"

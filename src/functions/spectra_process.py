@@ -18,7 +18,7 @@ def smoothing(*args) -> tuple[str, np.ndarray, np.ndarray, Spectrum]:
     params: DictConfig = args[1]
     prev: np.ndarray = np.copy(sp.y_data)
 
-    sp.y_smooth = savgol_filter(
+    y_smooth = savgol_filter(
         x=sp.y_data,
         window_length=params.window_length,
         polyorder=params.polyorder,
@@ -27,9 +27,9 @@ def smoothing(*args) -> tuple[str, np.ndarray, np.ndarray, Spectrum]:
         axis=params.axis,
     )
 
-    sp.change_y(sp.y_smooth)
+    sp.y = y_smooth
 
-    return ("Smooth", prev, sp.y_smooth, sp)
+    return ("Smooth", prev, y_smooth, sp)
 
 
 def peaks_find(*args) -> tuple[str, Line2D, Spectrum]:
@@ -79,9 +79,9 @@ def baseline(*args) -> tuple[str, np.ndarray, np.ndarray, Spectrum]:
     """
     sp: Spectrum = args[0]
     params: DictConfig = args[1]
-    prev = np.copy(sp.y_data)
+    prev = np.copy(sp.y)
 
-    y_ = sp.y_data
+    y_ = sp.y
     lam = params.lam
     p = params.p
     niter = params.niter
@@ -96,13 +96,13 @@ def baseline(*args) -> tuple[str, np.ndarray, np.ndarray, Spectrum]:
         # Do not create a new matrix, just update diagonal values
         W.setdiag(w)
         Z = W + D
-        z = sparse.linalg.spsolve(Z, w * sp.y_data)
-        w = p * (sp.y_data > z) + (1 - p) * (sp.y_data < z)
+        z = sparse.linalg.spsolve(Z, w * sp.y)
+        w = p * (sp.y > z) + (1 - p) * (sp.y < z)
 
-    sp.y_baseline = abs(z - y_)
-    sp.change_y(sp.y_baseline)
+    y_baseline = abs(z - y_)
+    sp.y = y_baseline
 
-    return ("Baseline", prev, sp.y_baseline, sp)
+    return ("Baseline", prev, y_baseline, sp)
 
 
 def norm_min_max(*args) -> tuple[str, np.ndarray, np.ndarray, Spectrum]:
@@ -123,11 +123,11 @@ def norm_min_max(*args) -> tuple[str, np.ndarray, np.ndarray, Spectrum]:
     min_val = sp.y_data.min()
     max_val = sp.y_data.max()
 
-    sp.y_normalized = (sp.y_data - min_val) / (max_val - min_val)
+    y_normalized = (sp.y_data - min_val) / (max_val - min_val)
 
-    sp.change_y(sp.y_normalized)
+    sp.y = y_normalized
 
-    return ("Normalize Min-Max", prev, sp.y_normalized, sp)
+    return ("Normalize Min-Max", prev, y_normalized, sp)
 
 
 def norm_z(*args) -> tuple[str, np.ndarray, np.ndarray, Spectrum]:
@@ -148,8 +148,8 @@ def norm_z(*args) -> tuple[str, np.ndarray, np.ndarray, Spectrum]:
     mean_val = sp.y_data.mean()
     std_val = sp.y_data.std()
 
-    sp.y_normalized_z = (sp.y_data - mean_val) / std_val
+    y_normalized_z = (sp.y_data - mean_val) / std_val
 
-    sp.change_y(sp.y_normalized_z)
+    sp.y = y_normalized_z
 
-    return ("Normalize Z", prev, sp.y_normalized_z, sp)
+    return ("Normalize Z", prev, y_normalized_z, sp)

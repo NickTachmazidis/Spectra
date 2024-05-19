@@ -274,10 +274,10 @@ class QtFunctions:
                 self.curves.pop(actions[2].id)
 
             elif actions[0] == "Smooth":
-                actions[3].change_y(actions[1])
+                actions[3].y = actions[1]
 
             elif actions[0] == "Baseline":
-                actions[3].change_y(actions[1])
+                actions[3].y = actions[1]
 
             elif actions[0] == "Peaks":
                 canvas_remove(self.canvas, actions[2].peaks_object)
@@ -285,10 +285,10 @@ class QtFunctions:
                 self.update_peaks_table()
 
             elif actions[0] == "Normalize Min-Max":
-                actions[3].change_y(actions[1])
+                actions[3].y = actions[1]
 
             elif actions[0] == "Normalize Z":
-                actions[3].change_y(actions[1])
+                actions[3].y = actions[1]
 
             elif actions[0] == "Reverse X":
                 self.canvas.axes.invert_xaxis()
@@ -349,10 +349,10 @@ class QtFunctions:
                 self.curves.update({actions[2].label: actions[2]})
 
             elif actions[0] == "Smooth":
-                actions[3].change_y(actions[2])
+                actions[3].y = actions[2]
 
             elif actions[0] == "Baseline":
-                actions[3].change_y(actions[2])
+                actions[3].y = actions[2]
 
             elif actions[0] == "Peaks":
                 self.canvas.axes.add_line(actions[1])
@@ -360,10 +360,10 @@ class QtFunctions:
                 self.update_peaks_table()
 
             elif actions[0] == "Normalize Min-Max":
-                actions[3].change_y(actions[2])
+                actions[3].y = actions[2]
 
             elif actions[0] == "Normalize Z":
-                actions[3].change_y(actions[2])
+                actions[3].y = actions[2]
 
             elif actions[0] == "Reverse X":
                 self.canvas.axes.invert_xaxis()
