@@ -2,6 +2,7 @@
 from itertools import count
 from typing import Any
 
+from matplotlib.widgets import Cursor
 import pandas as pd
 from matplotlib.backend_bases import KeyEvent, MouseEvent
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT
@@ -13,11 +14,19 @@ from omegaconf import DictConfig
 from PyQt5 import QtCore, QtWidgets, uic
 
 # src
-from src.classes.spectra import Spectrum
+from src.classes.spectra import Spectrum, Peaks
+from src.functions.canvas import canvas_update
 from src.gui.canvas import Canvas
 from src.gui.functions import QtFunctions
-from src.functions.spectra_process import baseline, norm_min_max, norm_z, peaks_find, smoothing
+from src.functions.spectra_process import (
+    baseline,
+    norm_min_max,
+    norm_z,
+    peaks_find,
+    smoothing,
+)
 from src.functions.utils import save_as
+
 
 class QtMain(QtWidgets.QMainWindow, QtFunctions):
     """Main Window class of the GUI app."""
@@ -60,6 +69,7 @@ class QtMain(QtWidgets.QMainWindow, QtFunctions):
         self.plot_demo()
 
         # Initialize My_peaks DataFrame
+        self.my_peaks = []
         self.df_p = pd.DataFrame(columns=["p_x", "p_y"])
 
         # Undo-Redo stacks
@@ -174,15 +184,18 @@ class QtMain(QtWidgets.QMainWindow, QtFunctions):
                     self.df_p = new_row
                 else:
                     self.df_p = pd.concat([self.df_p, new_row])
-                
-                self.df_p_plot(self.canvas.axes)
-                
-                self.undo_stack.append(("New_my_peak", new_row))
+               
+                pks_obj: Peaks = self.df_p_plot(self.canvas.axes)
+                self.my_peaks.append(pks_obj)
+
+                self.undo_stack.append(("New_my_peak", new_row, pks_obj))
 
                 if self.legend:
                     self.add_legend()
 
-                self.canvas_update()
+                self.cursor = canvas_update(
+                    self.canvas, self.xlabel, self.ylabel, self.title
+                )
 
         self.canvas.mpl_connect("button_press_event", add_peak)
 
@@ -193,15 +206,18 @@ class QtMain(QtWidgets.QMainWindow, QtFunctions):
                     last = self.df_p.tail(1)
                     self.df_p = self.df_p.drop(last.index).reset_index(drop=True)
                     
-                    self.undo_stack.append(("Delete_my_peak", last, None))
-                    
+                    last_peak: Peaks = self.my_peaks.pop()
+                    last_peak.remove()
+
+                    self.undo_stack.append(("Delete_my_peak", last, last_peak, None))
+
                     self.update_peaks_table()
-                    
-                    self.canvas.axes.collections[-1].remove()
-                
+
                 if self.legend:
                     self.add_legend()
 
-                self.canvas_update()
+                self.cursor = canvas_update(
+                    self.canvas, self.xlabel, self.ylabel, self.title
+                )
 
         self.canvas.mpl_connect("key_press_event", delete_peaks)

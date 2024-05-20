@@ -15,6 +15,7 @@ from matplotlib.widgets import Cursor
 from PyQt5 import QtCore, QtWidgets
 
 # src
+from src.classes.spectra import Peaks
 from src.exceptions.exception import CustomException
 from src.functions.canvas import (
     canvas_clear,
@@ -25,6 +26,7 @@ from src.functions.canvas import (
 )
 from src.functions.data_process import csv_to_dataframe
 from src.functions.utils import add_spectrum, get_file, get_handles, label_options
+from src.gui.canvas import Canvas
 
 
 class QtFunctions:
@@ -126,23 +128,21 @@ class QtFunctions:
         except Exception as e:
             raise CustomException(e)
 
-    def df_p_plot(self, ax) -> None:
+    def df_p_plot(self, ax: Axes) -> Peaks:
         """Adds peaks to the Canvas"""
         try:
             # keep the old x and y limits
             old_x_lim, old_y_lim = canvas_get_zoom(self.canvas)
 
-            self.df_p.plot(
-                ax=ax,
-                x=0,
-                y=1,
-                marker="o",
-                c="r",
-                s=10,
-                kind="scatter",
-                label="peak_user",
-                legend=False,
-            )
+            pks = ax.plot(
+                self.df_p['p_x'],
+                self.df_p['p_y'],
+                "ro",
+                ms=2,
+                label="peak_user"
+            )[-1]
+
+            pks_obj = Peaks(pks)
 
             self.update_peaks_table()
             self.cursor: Cursor = canvas_update(
@@ -151,7 +151,7 @@ class QtFunctions:
 
             # restore zoom
             canvas_restore_zoom(self.canvas, old_x_lim, old_y_lim)
-
+            return pks_obj
         except Exception as e:
             raise CustomException(e)
 
@@ -280,7 +280,7 @@ class QtFunctions:
                 actions[3].y = actions[1]
 
             elif actions[0] == "Peaks":
-                canvas_remove(self.canvas, actions[2].peaks_object)
+                actions[2].peaks_object.remove()
                 actions[2].delete_peaks()
                 self.update_peaks_table()
 
@@ -304,11 +304,11 @@ class QtFunctions:
                 self.df_p = self.df_p.drop(self.df_p.tail(1).index).reset_index(
                     drop=True
                 )
-                self.canvas.axes.collections[-1].remove()
+                actions[2].remove()
 
             elif actions[0] == "Delete_my_peak":
                 self.df_p = pd.concat([self.df_p, actions[1]]).reset_index(drop=True)
-                self.df_p_plot(ax=self.canvas.axes)
+                actions[2].add(self.canvas.axes)
 
             elif actions[0] == "Clear Table":
                 self.canvas.axes.collections = actions[1]
@@ -355,7 +355,7 @@ class QtFunctions:
                 actions[3].y = actions[2]
 
             elif actions[0] == "Peaks":
-                self.canvas.axes.add_line(actions[1])
+                actions[1].add(self.canvas.axes)
                 actions[2].add_peaks(actions[1])
                 self.update_peaks_table()
 
@@ -377,20 +377,18 @@ class QtFunctions:
 
             elif actions[0] == "New_my_peak":
                 self.df_p = pd.concat([self.df_p, actions[1]])
-                self.df_p_plot(self.canvas.axes)
+                actions[2].add(self.canvas.axes)
 
             elif actions[0] == "Delete_my_peak":
-                self.df_p = self.df_p.drop(self.df_p.tail(1).index).reset_index(
-                    drop=True
-                )
-                self.canvas.axes.collections[-1].remove()
+                self.df_p = self.df_p.drop(self.df_p.tail(1).index).reset_index(drop=True)
+                actions[2].remove()
                 self.update_peaks_table()
 
             self.cursor: Cursor = canvas_update(
                 self.canvas, self.xlabel, self.ylabel, self.title
             )
             self.update_spectrum_table()
-            # self.update_peaks_table() # check it
+            self.update_peaks_table() # check it
 
     ## Checkbox ##
     def chkbox_clicked(self, row, col) -> None:
@@ -399,16 +397,16 @@ class QtFunctions:
                 if i.label == self.table.item(row, col).text():
                     i.invisible()
                 if i.has_peaks:
-                    if i.peaks_object.get_label() == self.table.item(row, col).text():
-                        i.peaks_object.set_visible(False)
+                    if i.peaks_object.name == self.table.item(row, col).text():
+                        i.peaks_object.invisible()
 
         if self.table.item(row, col).checkState() == QtCore.Qt.Checked:
             for i in self.curves.values():
                 if i.label == self.table.item(row, col).text():
                     i.visible()
                 if i.has_peaks:
-                    if i.peaks_object.get_label() == self.table.item(row, col).text():
-                        i.peaks_object.set_visible(True)
+                    if i.peaks_object.name == self.table.item(row, col).text():
+                        i.peaks_object.visible()
 
         if self.table.item(row, col).checkState() == 1:
             for i in self.curves.values():
@@ -523,7 +521,7 @@ class QtFunctions:
             sp_labels = []  # list for spectrum label
             for i in self.curves.values():
                 if i.has_peaks:
-                    sp_peaks.append(i.peaks_object.get_xdata())
+                    sp_peaks.append(i.peaks_object.x)
                     sp_labels.append(i.label)
 
             # Update Spectrum Peaks

@@ -6,7 +6,7 @@ from scipy.signal import find_peaks, savgol_filter
 
 from src.functions.canvas import canvas_remove
 from src.gui.canvas import Canvas
-from src.classes.spectra import Spectrum
+from src.classes.spectra import Peaks, Spectrum
 
 
 def smoothing(*args) -> tuple[str, np.ndarray, np.ndarray, Spectrum]:
@@ -64,10 +64,11 @@ def peaks_find(*args) -> tuple[str, Line2D, Spectrum]:
             ms=2,
             label=f"peak_{sp.label}"
         )[-1]
-
-        sp.peaks_object = pks
         
-        return ("Peaks", pks, sp)
+        pks_obj = Peaks(pks)
+        sp.peaks_object = pks_obj
+        
+        return ("Peaks", pks_obj, sp)
 
 
 def baseline(*args) -> tuple[str, np.ndarray, np.ndarray, Spectrum]:
