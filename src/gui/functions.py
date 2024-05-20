@@ -521,7 +521,7 @@ class QtFunctions:
             sp_labels = []  # list for spectrum label
             for i in self.curves.values():
                 if i.has_peaks:
-                    sp_peaks.append(i.peaks_object.x)
+                    sp_peaks.append(i.peaks.x)
                     sp_labels.append(i.label)
 
             # Update Spectrum Peaks

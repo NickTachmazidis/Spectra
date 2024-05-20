@@ -3,6 +3,7 @@ from itertools import count
 from typing import Iterator, Optional
 
 # Data/visualisation
+from matplotlib.axes import Axes
 import numpy as np
 from matplotlib.lines import Line2D
 
@@ -36,8 +37,9 @@ class Spectrum:
 
         # Peaks
         self.has_peaks: bool = False
-        self.peaks_object: Optional[Peaks] = None
-
+        self._peaks_object: Optional[Peaks] = None
+        self.old_peaks: Optional[Peaks] = None
+    
     @property
     def y(self):
         """The y data of the Spectrum."""
@@ -48,6 +50,16 @@ class Spectrum:
         """Changes the current y values."""
         self.curve.set_ydata(value)
         self.y_data = value
+
+    @property
+    def peaks(self):
+        return self._peaks_object
+    
+    @peaks.setter
+    def peaks(self, value: Peaks) -> None:
+        if isinstance(value, Peaks):
+            self._peaks_object = value
+        raise ValueError("value must be a Peaks object.")
 
     def visible(self) -> None:
         self.curve.set_visible(True)
@@ -63,13 +75,21 @@ class Spectrum:
         self.curve.set_color("grey")
         self.tristate = -1
 
-    def delete_peaks(self) -> None:
-        self.has_peaks = False
-        self.peaks_object = None
+    def remove_peaks(self):
+        self._peaks_object.remove()
+        pks = self._peaks_object
+        self._delete_peaks()
+        self.old_peaks = pks
 
-    def add_peaks(self, peaks_obj: Peaks) -> None:
+    def _delete_peaks(self) -> None:
+        self.has_peaks = False
+        self._peaks_object = None
+
+    def add_peaks(self, peaks_obj: Peaks, ax: Optional[Axes] = None) -> None:
         self.has_peaks = True
-        self.peaks_object = peaks_obj
+        self._peaks_object = peaks_obj
+        if ax is not None:
+            self._peaks_object.add(ax)
 
     def __str__(self):
         return f"{self.label}"
