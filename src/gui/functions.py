@@ -15,7 +15,7 @@ from matplotlib.widgets import Cursor
 from PyQt5 import QtCore, QtWidgets
 
 # src
-from src.classes.spectra import Peaks
+from src.classes.peaks import Peaks
 from src.exceptions.exception import CustomException
 from src.functions.canvas import (
     canvas_clear,
@@ -255,7 +255,7 @@ class QtFunctions:
 
             if actions[0] == "Load":
                 if not actions[1] == "":
-                    canvas_remove(self.canvas, actions[2].curve)
+                    canvas_remove(actions[2].curve)
                     self.canvas.axes.add_line(actions[1].curve)
 
                     # restore zoom
@@ -266,7 +266,7 @@ class QtFunctions:
                     self.curves.update({actions[1].label: actions[1]})
 
             elif actions[0] == "Add Plot":
-                canvas_remove(self.canvas, actions[2].curve)
+                canvas_remove(actions[2].curve)
 
                 # restore zoom
                 canvas_restore_zoom(self.canvas, actions[3], actions[4])
@@ -330,7 +330,7 @@ class QtFunctions:
 
             if actions[0] == "Load":
                 if not actions[1] == "":
-                    canvas_remove(self.canvas, actions[1].curve)
+                    canvas_remove(actions[1].curve)
                     self.canvas.axes.add_line(actions[2].curve)
 
                     # restore zoom

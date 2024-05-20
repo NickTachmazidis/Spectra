@@ -46,10 +46,9 @@ def canvas_update(canvas: Canvas, xlabel: str, ylabel: str, title: str) -> Curso
     except Exception as e:
         raise CustomException(e)
 
-def canvas_remove(canvas: Canvas, obj: Line2D) -> None:
+def canvas_remove(obj: Line2D) -> None:
     """Removes a Line2D obj from the canvas."""
-    idx = canvas.axes.lines.index(obj)
-    canvas.axes.lines[idx].remove()
+    obj.remove()
 
 def canvas_get_zoom(canvas: Canvas) -> tuple[tuple[float, float], tuple[float, float]]:
     """Returns the current x and y limits."""
