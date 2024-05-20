@@ -1,9 +1,13 @@
 # Core
 from itertools import count
 from typing import Iterator, Optional
+
 # Data/visualisation
 import numpy as np
 from matplotlib.lines import Line2D
+
+from .peaks import Peaks
+
 
 class Spectrum:
     """Spectum class for plotted data."""
@@ -22,18 +26,18 @@ class Spectrum:
 
         # State
         self.loaded: bool = False
-        self.tristate: int = 1 # -1 tristate, 0 unchecked, 1 checked
-        
+        self.tristate: int = 1  # -1 tristate, 0 unchecked, 1 checked
+
         # Data proccessing
         self.y_orig: np.ndarray = np.copy(self.y_data)
-        
+
         # Color
         self._color: str = self.curve.get_color()
 
         # Peaks
         self.has_peaks: bool = False
-        self.peaks_object: Optional[np.ndarray] = None
-        
+        self.peaks_object: Optional[Peaks] = None
+
     @property
     def y(self):
         """The y data of the Spectrum."""
@@ -56,64 +60,36 @@ class Spectrum:
 
     def disabled(self) -> None:
         self.curve.set_visible(True)
-        self.curve.set_color('grey')
+        self.curve.set_color("grey")
         self.tristate = -1
 
     def delete_peaks(self) -> None:
         self.has_peaks = False
         self.peaks_object = None
 
-    def add_peaks(self, peaks_obj: np.array) -> None:
+    def add_peaks(self, peaks_obj: Peaks) -> None:
         self.has_peaks = True
         self.peaks_object = peaks_obj
 
     def __str__(self):
         return f"{self.label}"
-    
-class Peaks:
-    """Peaks class for peaks contained in Spectrum objects."""
-    def __init__(self, obj: Optional[Line2D] = None) -> None:
-        self._obj: Line2D = obj
-        self._x: np.ndarray = self._obj.get_xdata() if self._obj is not None else None 
-        self._label: str = self._obj.get_label() if self._obj is not None else None
-
-    @property
-    def x(self):
-        return self._x
-    
-    @property
-    def name(self):
-        return self._label
-    
-    def visible(self):
-        self._obj.set_visible(True)
-        
-    def invisible(self):
-        self._obj.set_visible(False)
-
-    def remove(self):
-        self._obj.remove()
-    
-    def add(self, ax):
-        ax.add_line(self._obj)
-
-    def __str__(self):
-        return f"{self.name}"
 
 
 class SpectrumList:
     """Spectrum list class to manage spectra."""
+
     def __init__(self) -> None:
         self._list = {}
 
     def add(self, spectrum):
-        if not self._list.get(spectrum.id, False):            
+        if not self._list.get(spectrum.id, False):
             self._list[spectrum.id] = {
                 "spectrum": spectrum,
                 "name": spectrum.label,
                 "visible": True,
-                "peaks": spectrum.peaks
-                }
+                "peaks": spectrum.peaks,
+            }
+
     @property
     def list(self):
         return self._list
