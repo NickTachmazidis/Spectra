@@ -1,12 +1,16 @@
+"""Spectra processing functions used in the GUI app."""
+
 import numpy as np
 from matplotlib.lines import Line2D
 from omegaconf import DictConfig
 from scipy import sparse
-from scipy.signal import find_peaks, savgol_filter
+from scipy.signal import find_peaks
+from scipy.signal import savgol_filter
 
-from src.functions.canvas import canvas_remove
-from src.gui.canvas import Canvas
-from src.classes.spectra import Peaks, Spectrum
+from ..classes.spectra import Peaks
+from ..classes.spectra import Spectrum
+from ..functions.canvas import canvas_remove
+from ..gui.canvas import Canvas
 
 
 def smoothing(*args) -> tuple[str, np.ndarray, np.ndarray, Spectrum]:

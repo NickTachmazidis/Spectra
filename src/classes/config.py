@@ -1,5 +1,9 @@
+"""Config class used in the GUI."""
+
 from dataclasses import dataclass
-from typing import Optional, Iterable
+from typing import Iterable
+from typing import Optional
+
 
 @dataclass
 class General:

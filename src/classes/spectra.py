@@ -1,10 +1,10 @@
-# Core
+"""Spectrum class used in the GUI."""
+
 from itertools import count
 from typing import Iterator, Optional
 
-# Data/visualisation
-from matplotlib.axes import Axes
 import numpy as np
+from matplotlib.axes import Axes
 from matplotlib.lines import Line2D
 
 from .peaks import Peaks

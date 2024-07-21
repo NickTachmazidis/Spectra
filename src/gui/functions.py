@@ -1,32 +1,30 @@
-# Core
+"""Functions for the GUI app."""
+
 from typing import Callable
 
 import matplotlib.pyplot as plt
 import mplcursors
 import numpy as np
 import pandas as pd
-
-# Data/visualisation
 from matplotlib.axes import Axes
 from matplotlib.lines import Line2D
 from matplotlib.widgets import Cursor
 
-# GUI
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore
+from PyQt5 import QtWidgets
 
-# src
-from src.classes.peaks import Peaks
-from src.exceptions.exception import CustomException
-from src.functions.canvas import (
-    canvas_clear,
-    canvas_get_zoom,
-    canvas_remove,
-    canvas_restore_zoom,
-    canvas_update,
-)
-from src.functions.data_process import csv_to_dataframe
-from src.functions.utils import add_spectrum, get_file, get_handles, label_options
-from src.gui.canvas import Canvas
+from ..classes.peaks import Peaks
+from ..exceptions.exception import CustomException
+from ..functions.canvas import canvas_clear
+from ..functions.canvas import canvas_get_zoom
+from ..functions.canvas import canvas_remove
+from ..functions.canvas import canvas_restore_zoom
+from ..functions.canvas import canvas_update
+from ..functions.data_process import csv_to_dataframe
+from ..functions.utils import add_spectrum
+from ..functions.utils import get_file
+from ..functions.utils import get_handles
+from ..functions.utils import label_options
 
 
 class QtFunctions:

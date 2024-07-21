@@ -1,3 +1,4 @@
+"""Functions for the Canvas object used in the GUI."""
 
 from matplotlib.axes import Axes
 from matplotlib.lines import Line2D

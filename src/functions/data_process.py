@@ -1,6 +1,9 @@
+"""Generic proccessing functions used in the GUI app."""
+
+from matplotlib.lines import Line2D
 import pandas as pd
 
-from src.exceptions.exception import CustomException
+from ..exceptions.exception import CustomException
 
 def csv_to_dataframe(
     input_file: str,

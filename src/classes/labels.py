@@ -1,3 +1,5 @@
+"""Labels class used in the GUI."""
+
 from enum import Enum
 
 

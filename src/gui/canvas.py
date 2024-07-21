@@ -1,8 +1,11 @@
-from PyQt5 import QtCore
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-from matplotlib.backend_bases import LocationEvent
-from matplotlib.figure import Figure
+"""Canvas class for the main app."""
+
 import seaborn as sns
+from matplotlib.backend_bases import LocationEvent
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.figure import Figure
+
+from PyQt5 import QtCore
 
 # Set style for plotting
 sns.set_style(

@@ -1,14 +1,16 @@
-import os
+"""Generic functions used in the GUI."""
 
-from PyQt5.QtWidgets import QFileDialog
+import os
 
 import pandas as pd
 from matplotlib.axes import Axes
 from matplotlib.lines import Line2D
 
-from src.classes.labels import Label
-from src.exceptions.exception import CustomException
-from src.classes.spectra import Spectrum
+from PyQt5.QtWidgets import QFileDialog
+
+from ..classes.labels import Label
+from ..classes.spectra import Spectrum
+from ..exceptions.exception import CustomException
 
 def save_as(curves: dict, sep: str) -> None:
     try:

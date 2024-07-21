@@ -1,31 +1,28 @@
-# Core
+"""Main Window of the GUI."""
+
 from itertools import count
 from typing import Any
 
-from matplotlib.widgets import Cursor
 import pandas as pd
 from matplotlib.backend_bases import KeyEvent, MouseEvent
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT
-
-# Data/visualisation
 from omegaconf import DictConfig
 
-# GUI
-from PyQt5 import QtCore, QtWidgets, uic
+from PyQt5 import QtCore
+from PyQt5 import QtWidgets
+from PyQt5 import uic
 
-# src
-from src.classes.spectra import Spectrum, Peaks
-from src.functions.canvas import canvas_update
-from src.gui.canvas import Canvas
-from src.gui.functions import QtFunctions
-from src.functions.spectra_process import (
-    baseline,
-    norm_min_max,
-    norm_z,
-    peaks_find,
-    smoothing,
-)
-from src.functions.utils import save_as
+from .canvas import Canvas
+from .functions import QtFunctions
+from ..classes.spectra import Peaks
+from ..classes.spectra import Spectrum
+from ..functions.canvas import canvas_update
+from ..functions.spectra_process import baseline
+from ..functions.spectra_process import norm_min_max
+from ..functions.spectra_process import norm_z
+from ..functions.spectra_process import peaks_find
+from ..functions.spectra_process import smoothing
+from ..functions.utils import save_as
 
 
 class QtMain(QtWidgets.QMainWindow, QtFunctions):

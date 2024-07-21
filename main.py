@@ -1,14 +1,12 @@
-# Core
+"""Main file of the Spectra app."""
+
 import sys
 
-# GUI
-from PyQt5 import QtWidgets
-
-# Configurations
 import hydra
 from hydra.core.config_store import ConfigStore
 
-# src
+from PyQt5 import QtWidgets
+
 from src.classes.config import Config
 from src.gui.main_window import QtMain
 
@@ -19,6 +17,7 @@ cs.store(name="spectra_config", node=Config)
 
 @hydra.main(version_base=None, config_path="src/conf", config_name="config")
 def main(cfg: Config) -> None:
+    """Main function of the Spectra app that executes the program."""
     # Load the program
     app = QtWidgets.QApplication(sys.argv)
     window = QtMain(settings=cfg)

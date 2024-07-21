@@ -1,3 +1,5 @@
+"""Peaks class used in the GUI."""
+
 from typing import Optional
 
 import numpy as np
