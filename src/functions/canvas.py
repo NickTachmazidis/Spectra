@@ -36,11 +36,12 @@ def canvas_update(canvas: Canvas, xlabel: str, ylabel: str, title: str) -> Curso
     try:
         remove_cursor(canvas.axes)
         
-        canvas.draw_idle()
         
-        canvas.axes.set_xlabel(xlabel)
-        canvas.axes.set_ylabel(ylabel)
+        canvas.axes.set_xlabel(xlabel, labelpad=1)
+        canvas.axes.set_ylabel(ylabel, labelpad=1)
         canvas.axes.set_title(title)
+
+        canvas.draw_idle()
         
         cursor: Cursor = add_cursor(canvas.axes)
         return cursor
