@@ -170,6 +170,12 @@ class QtFunctions:
                     actions = function(i, params)
                     self.undo_stack.append(actions)
 
+            # Recompute the data limits
+            self.canvas.axes.relim()
+
+            # Update using the new data limits
+            self.canvas.axes.autoscale_view()
+
             self.cursor: Cursor = canvas_update(
                 self.canvas, self.xlabel, self.ylabel, self.title
             )
