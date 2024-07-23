@@ -1,5 +1,6 @@
 """Functions for the GUI app."""
 
+from collections import namedtuple
 from typing import Callable
 
 import matplotlib.pyplot as plt
@@ -132,13 +133,14 @@ class QtFunctions:
             # keep the old x and y limits
             old_x_lim, old_y_lim = canvas_get_zoom(self.canvas)
 
-            pks = ax.plot(
-                self.df_p['p_x'],
-                self.df_p['p_y'],
-                "ro",
-                ms=2,
+            pks = ax.scatter(
+                x=self.df_p['p_x'],
+                y=self.df_p['p_y'],
+                c='red',
+                s=2,
+                zorder=3,
                 label="peak_user"
-            )[-1]
+            )
 
             pks_obj = Peaks(pks)
 
@@ -278,7 +280,7 @@ class QtFunctions:
                 actions[3].y = actions[1]
 
             elif actions[0] == "Peaks":
-                actions[2].peaks_object.remove()
+                actions[2].peaks.remove()
                 actions[2].delete_peaks()
                 self.update_peaks_table()
 
@@ -306,14 +308,22 @@ class QtFunctions:
 
             elif actions[0] == "Delete_my_peak":
                 self.df_p = pd.concat([self.df_p, actions[1]]).reset_index(drop=True)
-                actions[2].add(self.canvas.axes)
+                actions[2].add_to_axes(self.canvas.axes)
 
             elif actions[0] == "Clear Table":
-                self.canvas.axes.collections = actions[1]
+                # TODO
+                peaks_user =[]
+                for path_coll in actions[1]:
+                    if path_coll.get_label() == "peak_user":
+                        data = path_coll.get_offsets().data
+                        peaks_user.append((data[0][0], data[0][1]))
+                    
+                    peaks = Peaks(path_coll)
+                    # TODO: check functionality with spectrum
+                    # spectrum.add_peaks(peaks)
+                    peaks.add_to_axes(self.canvas.axes)
 
-                for k, v in actions[2].items():
-                    k.add_peaks(v)
-                    self.canvas.axes.lines.append(v)
+                self.df_p = pd.DataFrame(peaks_user, columns=["p_x", "p_y"]) 
 
             self.cursor: Cursor = canvas_update(
                 self.canvas, self.xlabel, self.ylabel, self.title
@@ -353,7 +363,7 @@ class QtFunctions:
                 actions[3].y = actions[2]
 
             elif actions[0] == "Peaks":
-                actions[1].add(self.canvas.axes)
+                actions[1].add_to_axes(self.canvas.axes)
                 actions[2].add_peaks(actions[1])
                 self.update_peaks_table()
 
@@ -375,12 +385,16 @@ class QtFunctions:
 
             elif actions[0] == "New_my_peak":
                 self.df_p = pd.concat([self.df_p, actions[1]])
-                actions[2].add(self.canvas.axes)
+                actions[2].add_to_axes(self.canvas.axes)
 
             elif actions[0] == "Delete_my_peak":
                 self.df_p = self.df_p.drop(self.df_p.tail(1).index).reset_index(drop=True)
                 actions[2].remove()
                 self.update_peaks_table()
+            
+            elif actions[0] == "Clear Table":
+                # TODO
+                print(actions, self.canvas.axes.collections)
 
             self.cursor: Cursor = canvas_update(
                 self.canvas, self.xlabel, self.ylabel, self.title
@@ -395,16 +409,16 @@ class QtFunctions:
                 if i.label == self.table.item(row, col).text():
                     i.invisible()
                 if i.has_peaks:
-                    if i.peaks_object.name == self.table.item(row, col).text():
-                        i.peaks_object.invisible()
+                    if i.peaks.name == self.table.item(row, col).text():
+                        i.peaks.invisible()
 
         if self.table.item(row, col).checkState() == QtCore.Qt.Checked:
             for i in self.curves.values():
                 if i.label == self.table.item(row, col).text():
                     i.visible()
                 if i.has_peaks:
-                    if i.peaks_object.name == self.table.item(row, col).text():
-                        i.peaks_object.visible()
+                    if i.peaks.name == self.table.item(row, col).text():
+                        i.peaks.visible()
 
         if self.table.item(row, col).checkState() == 1:
             for i in self.curves.values():
@@ -448,29 +462,48 @@ class QtFunctions:
     ## Tables ##
     def clear_peaks_table(self) -> None:
         try:
+            old_table = dict()
+            # Get the column count and iterate through the columns
+            column_count = self.table_peaks.columnCount()
+            for column in range(column_count):
+                # Get the column header text
+                header = self.table_peaks.horizontalHeaderItem(column).text()
+                print(header)
+                # Iterate through allthe rows and get the data for that column
+                temp = []
+                for row in range(self.table_peaks.rowCount()):
+                    item = self.table_peaks.item(row, column)
+                    print(item)
+                    if item is not None and item.text() != "":
+                        temp.append(item.text())
+                old_table[header] = temp
+            
+            # Clear the table
             self.table_peaks.setRowCount(0)
             self.table_peaks.setColumnCount(1)
 
             if self.canvas.axes.collections:
-                prev_coll = self.canvas.axes.collections
-                for collection in self.canvas.axes.collections:
-                    collection.remove()
+                prev_coll = []
+                for path_coll in self.canvas.axes.collections:
+                    prev_coll.append(path_coll)
+                    path_coll.remove()
             else:
                 prev_coll = []
 
             self.df_p = pd.DataFrame(columns=["p_x", "p_y"])
 
             prev_obj = dict()
-            for i in self.curves.values():
-                if i.has_peaks:
-                    prev_obj.update({i: i.peaks_object})
+            for spectrum in self.curves.values():
+                # TODO: check with my peaks
+                if spectrum.has_peaks:
+                    prev_obj.update({spectrum: spectrum.peaks})
                     # delete the peaks_object from the canvas
-                    idx = self.canvas.axes.lines.index(i.peaks_object)
-                    self.canvas.axes.lines[idx].remove()
+                    spectrum.peaks.remove()                    
                     # delete the peaks_object from the Spectrum Object
-                    i.delete_peaks()
+                    spectrum.delete_peaks()
 
-            self.undo_stack.append(("Clear Table", prev_coll, prev_obj))
+            self.undo_stack.append(("Clear Table", prev_coll, prev_obj, old_table))
+
             self.cursor: Cursor = canvas_update(
                 self.canvas, self.xlabel, self.ylabel, self.title
             )
@@ -479,6 +512,7 @@ class QtFunctions:
             raise CustomException(e)
 
     def update_spectrum_table(self) -> None:
+        """Updates the spectrum table."""
         try:
             self.table.setRowCount(0)
             self.table.insertRow(0)
@@ -507,40 +541,45 @@ class QtFunctions:
             raise CustomException(e)
 
     def update_peaks_table(self) -> None:
+        """Updates the peaks table."""
         try:
-            self.table_peaks.setRowCount(0)  # clear rows
-            self.table_peaks.setColumnCount(1)  # clear columns
+            # Clear rows and columns
+            self.table_peaks.setRowCount(0)
+            self.table_peaks.setColumnCount(1)
+
             if not self.df_p.empty:
                 my_peaks = [str(int(i)) for i in self.df_p["p_x"].tolist()]
             else:
                 my_peaks = []
 
-            sp_peaks = []  # list for spectrum peaks x data
-            sp_labels = []  # list for spectrum label
-            for i in self.curves.values():
-                if i.has_peaks:
-                    sp_peaks.append(i.peaks.x)
-                    sp_labels.append(i.label)
+            # Initialize a numedtuple for spectrum peaks x data and labels
+            spectrum_peaks_labels = namedtuple("SpectrumPeaks",["peaks_x", "label"])
+
+            spectrum_peaks_labels_list = [
+                spectrum_peaks_labels(peaks_x=curve.peaks.x, label=curve.label) 
+                for curve in self.curves.values()
+                if curve.has_peaks
+                ]
 
             # Update Spectrum Peaks
-            if sp_peaks:
+            if spectrum_peaks_labels_list:
                 # Set row count
-                m = max([i.size for i in sp_peaks])
+                m = max([peak.peaks_x.size for peak in spectrum_peaks_labels_list])
                 self.table_peaks.setRowCount(m)
                 # Set column count
-                self.table_peaks.setColumnCount(len(sp_peaks) + 1)
+                self.table_peaks.setColumnCount(len(spectrum_peaks_labels_list) + 1)
                 # Add the header labels
-                self.table_peaks.setHorizontalHeaderLabels(["My_peaks"] + sp_labels)
+                self.table_peaks.setHorizontalHeaderLabels(["My_peaks"] + [spectrum.label for spectrum in spectrum_peaks_labels_list])
 
-                for col, xdata in enumerate(sp_peaks, start=1):
-                    pks = [str(int(i)) for i in np.sort(xdata)]
+                for col, data in enumerate(spectrum_peaks_labels_list, start=1):
+                    pks = [str(int(i)) for i in np.sort(data.peaks_x)]
                     for num, v in enumerate(pks):
                         self.table_peaks.setItem(
                             num, col, QtWidgets.QTableWidgetItem(v)
                         )
             # Update My_peaks
             if my_peaks:
-                if not sp_peaks:
+                if not spectrum_peaks_labels_list:
                     self.table_peaks.insertRow(0)
                     self.table_peaks.setHorizontalHeaderLabels(["My_peaks"])
                     self.table_peaks.setRowCount(len(self.df_p))
@@ -552,6 +591,7 @@ class QtFunctions:
             raise CustomException(e)
 
     def save_table(self) -> None:
+        """Saves the peaks table to a CSV file."""
         try:
             # Setting Column Headers
             col_headers = []
