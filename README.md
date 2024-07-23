@@ -2,7 +2,7 @@
 An open-source GUI for spectroscopic analysis written with Python 3.
 
 # Version 2
-As of April 2023 the new version of Spectra is out, with many new features. To see the new version change the branch to `version_2`.
+As of April 2023 the new version of Spectra is out, with many new features. To see the new version change the branch to `main`.
 
 # Requirements
 
