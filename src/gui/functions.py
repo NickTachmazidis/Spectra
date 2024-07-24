@@ -1,5 +1,6 @@
 """Functions for the GUI app."""
 
+import logging
 from collections import namedtuple
 from typing import Callable
 
@@ -30,9 +31,12 @@ from ..functions.utils import label_options
 
 class QtFunctions:
     """Function class for the GUI app."""
+    _logger = logging.getLogger(__name__)
+    _logger.setLevel(logging.DEBUG)
 
     def plot(self, df: pd.DataFrame, label: str, ax: Axes, state: str = "Add") -> Axes:
         """Plots the pd.DataFrame object to the Canvas."""
+        self._logger.info("Plotting the data")
         try:
             ax = df.plot(
                 ax=ax,
@@ -42,15 +46,19 @@ class QtFunctions:
                 legend=self.legend,
                 label=label,
             )
+            
+            self._logger.info(f"The data for the spectrum {label} has been plotted.")
 
             # Convert DataFrame to Spectrum object
             sp = add_spectrum(ax.lines[-1])
             self.curves.update({sp.label: sp})
 
             if self.legend:
+                self._logger.info("Adding the legend")
                 self.add_legend()
             if state == "Load":
                 self.curves[list(self.curves)[-1]].loaded = True
+                self._logger.debug(f"Label={list(self.curves)[-1]}, loaded={self.curves[list(self.curves)[-1]].loaded}")
 
             self.cursor: Cursor = canvas_update(
                 self.canvas, self.xlabel, self.ylabel, self.title
@@ -64,19 +72,29 @@ class QtFunctions:
 
     def load(self) -> None:
         """Loads the File."""
+        self._logger.info("Loading the file")
         try:
             if self.curves:
                 for i in self.curves.values():
                     if i.loaded:
+                        self._logger.debug(f"Adding {i.label} in the loaded list")
                         self.load_list.append(i)
                 last = self.curves.pop(list(self.curves)[-1])
+                self._logger.debug(f"Removed {last.label} from the curves")
+                # Reset the curves
                 self.curves = dict()
 
+            self._logger.info(f"Getting the file from {self.settings.general.path}")
+
             input_file = get_file(self.settings.general.path)
+            self._logger.debug(f"The file is {input_file}")
+            
+            self._logger.info("Proccesing the data")
             df, label = csv_to_dataframe(
                 input_file=input_file, sep=self.sep, engine=self.engine
             )
             self.title = label
+            self._logger.debug(f"The file {self.title} was succesfully processed")
 
             # keep the old x and y limits
             old_x_lim, old_y_lim = canvas_get_zoom(self.canvas)
@@ -89,6 +107,7 @@ class QtFunctions:
 
             new = self.curves[list(self.curves)[-1]]
             new.loaded = True
+            self._logger.debug(f"{new.label} is was added to the curves")
 
             self.undo_stack.append(
                 ("Load", last, new, old_x_lim, old_y_lim, new_x_lim, new_y_lim)
@@ -98,16 +117,23 @@ class QtFunctions:
 
     def add_plot(self) -> None:
         """Adds another line to the Canvas"""
+        logging.info("Adding a new spectrum")
         try:
             prev = self.added[-1]
+            logging.debug(f"The previous spectrum is {prev}")
+
             input_file = get_file(self.settings.general.path)
+            logging.debug(f"The file is {input_file}")
 
             # keep the old x and y limits
             old_x_lim, old_y_lim = canvas_get_zoom(self.canvas)
 
+            self._logger.info("Processing the data")
             df, label = csv_to_dataframe(
                 input_file=input_file, sep=self.sep, engine=self.engine
             )
+            logging.debug(f"The file {label} was succesfully processed")
+
             self.plot(df=df, label=label, ax=self.canvas.axes, state="Add")
 
             # keep the new x and y limits
@@ -129,6 +155,7 @@ class QtFunctions:
 
     def df_p_plot(self, ax: Axes) -> Peaks:
         """Adds peaks to the Canvas"""
+        self._logger.info("Adding custom peaks to the canvas")
         try:
             # keep the old x and y limits
             old_x_lim, old_y_lim = canvas_get_zoom(self.canvas)
@@ -141,10 +168,13 @@ class QtFunctions:
                 zorder=3,
                 label="peak_user"
             )
+            self._logger.info("The peaks were plotted succesfully")
 
             pks_obj = Peaks(pks)
+            self._logger.debug(f"The peaks object is {pks_obj}")
 
             self.update_peaks_table()
+
             self.cursor: Cursor = canvas_update(
                 self.canvas, self.xlabel, self.ylabel, self.title
             )
@@ -156,6 +186,7 @@ class QtFunctions:
             raise CustomException(e)
 
     def plot_demo(self) -> None:
+        """Plots a demo spectrum to the canvas."""
         df = pd.DataFrame({"x": self.x, "y": self.y}, dtype="float")
         self.plot(df=df, label=self.label, ax=self.canvas.axes, state="Load")
 
@@ -164,9 +195,11 @@ class QtFunctions:
         """Call the data processing functions
         to the visible (checked) Spectrum objects.
         """
+        self._logger.info("Processing the data")
         try:
             for i in self.curves.values():
                 if i.tristate == 1:
+                    self._logger.debug(f"Spectrum: {i.label}, fuction={function.__name__}, {params=}")
                     actions = function(i, params)
                     self.undo_stack.append(actions)
 
@@ -186,15 +219,20 @@ class QtFunctions:
 
     def prom_change(self):
         """Changes the prominence parameter for peaks_find function."""
+        self._logger.info("Changing the prominence")
         try:
             prev = self.prom
+            self._logger.debug(f"The previous prominence is {prev}")
             self.prom = float(self.lineEdit_prominence.text())
-        except ValueError:
+        except ValueError as e:
+            self._logger.error(f"{type(e)}: {e}, returning the previous prominence")
             self.prom = prev
 
     def edit_form(self) -> None:
+        """Edits the form."""
+        self._logger.info("Editing the form")
         try:
-            fig, ax = plt.subplots(nrows=1, ncols=1)
+            _, ax = plt.subplots(nrows=1, ncols=1)
             for i in self.curves.values():
                 if i.tristate == 1:
                     ax.plot(
@@ -231,6 +269,8 @@ class QtFunctions:
             raise CustomException(e)
 
     def reverse_axis(self, axis) -> None:
+        """Reverses the axis."""
+        self._logger.info(f"Reversing the {axis} axis")
         try:
             if axis == "X":
                 self.canvas.axes.invert_xaxis()
@@ -255,9 +295,13 @@ class QtFunctions:
 
     # Undo redo
     def undo(self) -> None:
+        """Undoes the last action."""
+        self._logger.info("Undoing the last action")
         if self.undo_stack:
             actions = self.undo_stack.pop()
             self.redo_stack.append(actions)
+            
+            self._logger.debug(f"The actions are {actions}")
 
             if actions[0] == "Load":
                 if not actions[1] == "":
@@ -338,9 +382,13 @@ class QtFunctions:
             self.update_peaks_table()
 
     def redo(self) -> None:
+        """Redoes the last action."""
+        logging.info("Redoing the last action")
         if self.redo_stack:
             actions = self.redo_stack.pop()
             self.undo_stack.append(actions)
+
+            self._logger.debug(f"The actions are {actions}")
 
             if actions[0] == "Load":
                 if not actions[1] == "":
@@ -410,6 +458,8 @@ class QtFunctions:
 
     ## Checkbox ##
     def chkbox_clicked(self, row, col) -> None:
+        """Called when a checkbox is clicked."""
+        self._logger.info("Checkbox clicked")
         if self.table.item(row, col).checkState() == QtCore.Qt.Unchecked:
             for i in self.curves.values():
                 if i.label == self.table.item(row, col).text():
@@ -437,9 +487,12 @@ class QtFunctions:
 
     ## Legend Checkbox ##
     def add_legend(self) -> None:
+        """Adds the legend to the canvas."""
+        self._logger.info("Adding the legend")
         if self.legend_checkBox.isChecked():
             self.legend = True
             handles: list[Line2D] = get_handles(self.canvas.axes)
+            self._logger.debug(f"{handles=}, {[(type(i), i.get_label()) for i in handles]}")
             self.canvas.axes.legend(handles=handles)
         else:
             self.legend = False
@@ -451,6 +504,12 @@ class QtFunctions:
 
     ## Spinbox ##
     def spinbox_value_changed(self, axis: str) -> None:
+        """Changes the value of the spinbox and updates the data for x and y axis.
+        For x: -values move to the left and +values move to the right.
+        For y: -values move down and +values move up.
+        """
+        self._logger.info(f"Changing the value of the {axis} axis")
+        # TODO: when changing the value of the spinbox from + to - or reverse, need to set to zero and then increament
         value_y = self.doubleSpinBox_y_axis.value()
         value_x = self.doubleSpinBox_x_axis.value()
         for i in self.curves.values():
@@ -467,6 +526,8 @@ class QtFunctions:
 
     ## Tables ##
     def clear_peaks_table(self) -> None:
+        """Clears the peaks table."""
+        self._logger.info("Clearing the peaks table")
         try:
             old_table = dict()
             # Get the column count and iterate through the columns
@@ -519,6 +580,7 @@ class QtFunctions:
 
     def update_spectrum_table(self) -> None:
         """Updates the spectrum table."""
+        self._logger.info("Updating the spectrum table")
         try:
             self.table.setRowCount(0)
             self.table.insertRow(0)
@@ -548,6 +610,7 @@ class QtFunctions:
 
     def update_peaks_table(self) -> None:
         """Updates the peaks table."""
+        self._logger.info("Updating the peaks table")
         try:
             # Clear rows and columns
             self.table_peaks.setRowCount(0)
@@ -598,6 +661,7 @@ class QtFunctions:
 
     def save_table(self) -> None:
         """Saves the peaks table to a CSV file."""
+        self._logger.info("Saving the peaks table")
         try:
             # Setting Column Headers
             col_headers = []
@@ -632,6 +696,8 @@ class QtFunctions:
 
     ## Labels ##
     def add_label(self) -> None:
+        """Adds a label to the canvas."""
+        self._logger.info("Adding a label")
         try:
             prev = self.labels[-1]
             new = self.dropbox_lbl.currentText()
