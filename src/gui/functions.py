@@ -618,7 +618,7 @@ class QtFunctions:
             f = QtWidgets.QFileDialog.getSaveFileName(
                 parent=None,
                 caption="Save File",
-                directory=self.dir,
+                directory=self.settings.general.path,
                 filter="Comma Separated Values (*.csv)",
             )[0]
 
