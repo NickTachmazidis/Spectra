@@ -20,8 +20,8 @@ def save_as(curves: dict, sep: str) -> None:
                 title = i.label
                 df = pd.DataFrame({"x": i.x_data, "y": i.y_data})
                 if i.peaks:
-                    df["peaks_x"] = pd.Series(i.peaks_object.get_xdata())
-                    df["peaks_y"] = pd.Series(i.peaks_object.get_ydata())
+                    df["peaks_x"] = pd.Series(i.peaks.get_xdata())
+                    df["peaks_y"] = pd.Series(i.peaks.get_ydata())
             dfs.append((title, df))
 
         direc = str(
